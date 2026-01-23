@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 enum AnimationType { fade, slideHorizontal, slideVertical, scale }
 
 typedef CustomRouteTransitionBuilder =
-Widget Function({
-required int index,
-required Widget child,
-required int currentIndex,
-required int nextIndex,
-required Animation<double> animation,
-});
+    Widget Function({
+      required int index,
+      required Widget child,
+      required int currentIndex,
+      required int nextIndex,
+      required Animation<double> animation,
+    });
 
 class ShellRouteTransitions {
   static CustomRouteTransitionBuilder get fade => _fadeTransition;
@@ -36,7 +36,9 @@ class ShellRouteTransitions {
       opacity = 1.0;
     }
 
-    return Positioned.fill(child: Opacity(opacity: opacity, child: child));
+    return Positioned.fill(
+      child: Opacity(opacity: opacity, child: child),
+    );
   }
 
   static Widget _slideHorizontalTransition({
@@ -54,8 +56,9 @@ class ShellRouteTransitions {
       offsetX = isMovingForward ? -animation.value : animation.value;
       opacity = 1.0 - animation.value;
     } else if (index == nextIndex) {
-      offsetX =
-      isMovingForward ? 1.0 - animation.value : -1.0 + animation.value;
+      offsetX = isMovingForward
+          ? 1.0 - animation.value
+          : -1.0 + animation.value;
       opacity = animation.value;
     } else if (index == currentIndex && index == nextIndex) {
       offsetX = 0.0;
@@ -129,8 +132,8 @@ class ShellRouteTransitions {
   }
 
   static CustomRouteTransitionBuilder createCustomTransition(
-      CustomRouteTransitionBuilder builder,
-      ) {
+    CustomRouteTransitionBuilder builder,
+  ) {
     return builder;
   }
 }

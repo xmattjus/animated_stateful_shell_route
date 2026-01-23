@@ -1,25 +1,25 @@
-name: shell_route_transitions
+name: animated_stateful_shell_route
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 description: "A Flutter package that provides beautiful and customizable transitions for shell routes in Flutter applications."
-version: 0.0.7
-homepage: https://github.com/BawarX/shelll_route_animation
-repository: https://github.com/BawarX/shell_route_transition
-issue_tracker: https://github.com/BawarX/shelll_route_animation/issues
-documentation: https://github.com/BawarX/shelll_route_animation
+version: 0.0.1
+homepage: https://github.com/xmattjus/animated_stateful_shell_route
+repository: https://github.com/xmattjus/animated_stateful_shell_route
+issue_tracker: https://github.com/xmattjus/animated_stateful_shell_route/issues
+documentation: https://github.com/xmattjus/animated_stateful_shell_route
 
 environment:
-  sdk: ^3.7.0
+  sdk: ^3.10.0
   flutter: ">=1.17.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  go_router: ^14.8.1
-  collection: ^1.17.0
+  go_router: ^17.0.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

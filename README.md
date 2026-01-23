@@ -1,4 +1,4 @@
-# Shell Route Transitions
+# Animated Stateful Shell Route
 
 A Flutter package that provides beautiful and customizable transitions for shell routes in Flutter applications. This package makes it easy to add professional-looking animations when navigating between routes.
 
@@ -29,21 +29,6 @@ A Flutter package that provides beautiful and customizable transitions for shell
 ### Scale Transition
 ![Scale Transition](assets/gifs/scale_transition.gif)
 
-
-## Getting Started
-
-Add the package to your `pubspec.yaml` file:
-
-```yaml
-dependencies:
-  shell_route_transitions: ^0.0.7
-```
-
-Then run:
-
-```bash
-flutter pub get
-```
 
 ## Usage
 
@@ -95,8 +80,3 @@ ShellRouteTransitions.scale
 
 
 
-## Additional Information
-
-- [GitHub Repository](https://github.com/BawarX/shelll_route_animation)
-- [Bug Reports and Feature Requests](https://github.com/BawarX/shelll_route_animation/issues)
-- [API Documentation](https://pub.dev/documentation/shell_route_transitions/latest/)
