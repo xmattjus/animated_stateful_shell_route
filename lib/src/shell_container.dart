@@ -22,9 +22,6 @@ class AnimatedShellRouteContainer extends StatefulWidget {
   /// Builder that customizes how branches animate during switches.
   final CustomRouteTransitionBuilder transitionBuilder;
 
-  /// Whether branches render inside an indexed stack.
-  final bool isIndexedStack;
-
   /// Widgets for each branch of the shell route.
   final List<Widget> children;
 
@@ -35,7 +32,6 @@ class AnimatedShellRouteContainer extends StatefulWidget {
     required this.transitionDuration,
     required this.transitionCurve,
     required this.transitionBuilder,
-    this.isIndexedStack = false,
     required this.children,
   });
 
@@ -157,15 +153,7 @@ class _AnimatedShellRouteContainerState
           }),
         );
 
-        final stack = () {
-          if (widget.isIndexedStack) {
-            return IndexedStack(index: _nextIndex, children: children);
-          } else {
-            return Stack(children: children);
-          }
-        }();
-
-        return SizedBox(child: stack);
+        return SizedBox(child: Stack(children: children));
       },
     );
   }
@@ -182,9 +170,12 @@ class _AnimatedShellRouteContainerState
       shouldIgnorePointer = index != _currentIndex;
     }
 
-    return TickerMode(
-      enabled: isVisible,
-      child: IgnorePointer(ignoring: shouldIgnorePointer, child: child),
+    return Offstage(
+      offstage: !isVisible,
+      child: TickerMode(
+        enabled: isVisible,
+        child: IgnorePointer(ignoring: shouldIgnorePointer, child: child),
+      ),
     );
   }
 }

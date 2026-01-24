@@ -15,7 +15,6 @@ class AnimatedStatefulShellRoute extends StatefulShellRoute {
 
   /// Builder that defines how branch content animates during switches.
   final CustomRouteTransitionBuilder transitionBuilder;
-  final bool _isIndexedStack;
 
   /// Creates an animated shell route using a stack for transitions.
   /// Keeps branch state intact while animating between destinations.
@@ -31,28 +30,7 @@ class AnimatedStatefulShellRoute extends StatefulShellRoute {
     this.transitionDuration = const Duration(milliseconds: 300),
     this.transitionCurve = Easing.standard,
     required this.transitionBuilder,
-  }) : _isIndexedStack = false,
-       super(
-         navigatorContainerBuilder: _buildAnimatedContainer,
-         key: navigatorKey,
-       );
-
-  /// Creates an animated shell route that uses an indexed stack layout.
-  /// Keeps every branch alive while still applying transition animations.
-  AnimatedStatefulShellRoute.indexedStack({
-    required super.branches,
-    super.redirect,
-    required StatefulShellRouteBuilder super.builder,
-    super.pageBuilder,
-    super.notifyRootObserver,
-    super.parentNavigatorKey,
-    super.restorationScopeId,
-    GlobalKey<StatefulNavigationShellState>? navigatorKey,
-    this.transitionDuration = const Duration(milliseconds: 300),
-    this.transitionCurve = Easing.standard,
-    required this.transitionBuilder,
-  }) : _isIndexedStack = true,
-       super(
+  }) : super(
          navigatorContainerBuilder: _buildAnimatedContainer,
          key: navigatorKey,
        );
@@ -70,7 +48,6 @@ class AnimatedStatefulShellRoute extends StatefulShellRoute {
       transitionDuration: route.transitionDuration,
       transitionCurve: route.transitionCurve,
       transitionBuilder: route.transitionBuilder,
-      isIndexedStack: route._isIndexedStack,
       children: children,
     );
   }
