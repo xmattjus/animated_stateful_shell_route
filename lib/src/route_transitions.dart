@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+/// Animation styles available for shell route branch transitions.
 enum AnimationType { fade, slideHorizontal, slideVertical, scale }
 
+/// Signature for builders that animate shell route branch switches.
 typedef CustomRouteTransitionBuilder =
     Widget Function({
       required int index,
@@ -11,12 +13,22 @@ typedef CustomRouteTransitionBuilder =
       required Animation<double> animation,
     });
 
+/// Built-in transition builders for animated shell routes.
+///
+/// Provides ready-to-use motion patterns for consistent branch changes.
 class ShellRouteTransitions {
+  /// Fades out the current branch while fading in the next branch.
   static CustomRouteTransitionBuilder get fade => _fadeTransition;
+
+  /// Slides branches horizontally while adjusting opacity.
   static CustomRouteTransitionBuilder get slideHorizontal =>
       _slideHorizontalTransition;
+
+  /// Slides branches vertically while adjusting opacity.
   static CustomRouteTransitionBuilder get slideVertical =>
       _slideVerticalTransition;
+
+  /// Scales branches to emphasize the incoming destination.
   static CustomRouteTransitionBuilder get scale => _scaleTransition;
 
   static Widget _fadeTransition({
@@ -36,9 +48,7 @@ class ShellRouteTransitions {
       opacity = 1.0;
     }
 
-    return Positioned.fill(
-      child: Opacity(opacity: opacity, child: child),
-    );
+    return Opacity(opacity: opacity, child: child);
   }
 
   static Widget _slideHorizontalTransition({
@@ -65,11 +75,9 @@ class ShellRouteTransitions {
       opacity = 1.0;
     }
 
-    return Positioned.fill(
-      child: FractionalTranslation(
-        translation: Offset(offsetX, 0.0),
-        child: Opacity(opacity: opacity, child: child),
-      ),
+    return FractionalTranslation(
+      translation: Offset(offsetX, 0.0),
+      child: Opacity(opacity: opacity, child: child),
     );
   }
 
@@ -94,11 +102,9 @@ class ShellRouteTransitions {
       opacity = 1.0;
     }
 
-    return Positioned.fill(
-      child: FractionalTranslation(
-        translation: Offset(0.0, offsetY),
-        child: Opacity(opacity: opacity, child: child),
-      ),
+    return FractionalTranslation(
+      translation: Offset(0.0, offsetY),
+      child: Opacity(opacity: opacity, child: child),
     );
   }
 
@@ -123,14 +129,14 @@ class ShellRouteTransitions {
       opacity = 1.0;
     }
 
-    return Positioned.fill(
-      child: Transform.scale(
-        scale: scale,
-        child: Opacity(opacity: opacity, child: child),
-      ),
+    return Transform.scale(
+      scale: scale,
+      child: Opacity(opacity: opacity, child: child),
     );
   }
 
+  /// Wraps a custom transition builder for clarity and type safety.
+  /// Use this when providing your own animation without the presets.
   static CustomRouteTransitionBuilder createCustomTransition(
     CustomRouteTransitionBuilder builder,
   ) {

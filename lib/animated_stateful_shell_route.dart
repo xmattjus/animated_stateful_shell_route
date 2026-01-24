@@ -1,8 +1,6 @@
-/// Shell Route Transitions
-///
-/// A Flutter package that provides beautiful and customizable transitions
-/// for shell routes in Flutter applications.
+/// Animated shell routes that keep branch transitions consistent.
+/// Provides reusable motion patterns so tab switches feel intentional.
 library;
 
-export 'src/animated_stateful_shell_route.dart';
+export 'src/shell_route.dart';
 export 'src/route_transitions.dart';

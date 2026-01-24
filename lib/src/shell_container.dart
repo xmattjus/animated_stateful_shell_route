@@ -1,87 +1,46 @@
+import 'dart:collection' show UnmodifiableListView;
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'extensions.dart';
 import 'route_transitions.dart';
 
-class AnimatedStatefulShellRoute extends StatefulShellRoute {
-  AnimatedStatefulShellRoute({
-    required super.branches,
-    super.redirect,
-    required StatefulShellRouteBuilder super.builder,
-    super.pageBuilder,
-    super.notifyRootObserver,
-    super.parentNavigatorKey,
-    super.restorationScopeId,
-    super.key,
-    this.transitionDuration = const Duration(milliseconds: 300),
-    this.transitionCurve = Easing.standard,
-    required this.transitionBuilder,
-  }) : super(navigatorContainerBuilder: _buildAnimatedContainer);
-
-  final Duration transitionDuration;
-  final Curve transitionCurve;
-  final CustomRouteTransitionBuilder transitionBuilder;
-
-  AnimatedStatefulShellRoute.indexedStack({
-    required super.branches,
-    super.redirect,
-    required StatefulShellRouteBuilder super.builder,
-    super.pageBuilder,
-    super.notifyRootObserver,
-    super.parentNavigatorKey,
-    super.restorationScopeId,
-    super.key,
-    this.transitionDuration = const Duration(milliseconds: 300),
-    this.transitionCurve = Easing.standard,
-    required this.transitionBuilder,
-  }) : super(navigatorContainerBuilder: _buildAnimatedContainer);
-
-  static Widget _buildAnimatedContainer(
-    BuildContext context,
-    StatefulNavigationShell navigationShell,
-    List<Widget> children,
-  ) {
-    final AnimatedStatefulShellRoute route =
-        navigationShell.route as AnimatedStatefulShellRoute;
-
-    return AnimatedShellRouteContainer(
-      navigationShell: navigationShell,
-      transitionDuration: route.transitionDuration,
-      transitionCurve: route.transitionCurve,
-      transitionBuilder: route.transitionBuilder,
-      children: children,
-    );
-  }
-}
-
+/// Container that wires shell route animations to branch widgets.
+///
+/// Keeps navigation shell state synchronized while applying transitions.
 class AnimatedShellRouteContainer extends StatefulWidget {
+  /// Navigation shell that controls the active branch.
   final StatefulNavigationShell navigationShell;
-  final List<Widget> children;
-  final Duration transitionDuration;
-  final Curve transitionCurve;
-  final CustomRouteTransitionBuilder transitionBuilder;
-  final bool _isIndexedStack;
 
+  /// Duration for branch transition animations.
+  final Duration transitionDuration;
+
+  /// Curve applied to branch transition animations.
+  final Curve transitionCurve;
+
+  /// Builder that customizes how branches animate during switches.
+  final CustomRouteTransitionBuilder transitionBuilder;
+
+  /// Whether branches render inside an indexed stack.
+  final bool isIndexedStack;
+
+  /// Widgets for each branch of the shell route.
+  final List<Widget> children;
+
+  /// Creates an animated container for shell routes.
   const AnimatedShellRouteContainer({
     super.key,
     required this.navigationShell,
-    required this.children,
-    this.transitionDuration = const Duration(milliseconds: 300),
-    this.transitionCurve = Curves.easeInOut,
+    required this.transitionDuration,
+    required this.transitionCurve,
     required this.transitionBuilder,
-  }) : _isIndexedStack = false;
-
-  const AnimatedShellRouteContainer.indexedStack({
-    super.key,
-    required this.navigationShell,
+    this.isIndexedStack = false,
     required this.children,
-    this.transitionDuration = const Duration(milliseconds: 300),
-    this.transitionCurve = Curves.easeInOut,
-    required this.transitionBuilder,
-  }) : _isIndexedStack = true;
+  });
 
   @override
+  /// Creates the mutable state for this animated container.
   State<AnimatedShellRouteContainer> createState() =>
       _AnimatedShellRouteContainerState();
 }
@@ -120,8 +79,7 @@ class _AnimatedShellRouteContainerState
     }
   }
 
-  /// Handles branch (tab) changes with animation
-  /// Includes protection against rapid tab switching desynchronization
+  // Handles branch changes with animation and guards rapid switching.
   void _onBranchChanged(int newIndex) {
     if (_currentIndex == newIndex) return;
 
@@ -171,31 +129,42 @@ class _AnimatedShellRouteContainerState
       _nextIndex = _currentIndex;
     }
 
-    final children = widget.children.mapIndexed<Widget>((index, child) {
-      final bool isVisible = index == _currentIndex || index == _nextIndex;
-
-      Widget animatedChild = _createAnimatedChild(child, index, isVisible);
-
-      return widget.transitionBuilder(
-        index: index,
-        child: animatedChild,
-        currentIndex: _currentIndex,
-        nextIndex: _nextIndex,
-        animation: _animation,
-      );
-    }).toList();
-
-    final stack = () {
-      if (widget._isIndexedStack) {
-        return IndexedStack(index: _currentIndex, children: children);
-      } else {
-        return Stack(children: children);
-      }
-    }();
-
     return AnimatedBuilder(
       animation: _animation,
       builder: (context, child) {
+        final children = UnmodifiableListView<Widget>(
+          widget.children.mapIndexed<Widget>((index, child) {
+            final bool isVisible =
+                index == _currentIndex || index == _nextIndex;
+
+            Widget animatedChild = _createAnimatedChild(
+              child,
+              index,
+              isVisible,
+            );
+
+            // Apply transition animation
+            Widget transitionedChild = widget.transitionBuilder(
+              index: index,
+              child: animatedChild,
+              currentIndex: _currentIndex,
+              nextIndex: _nextIndex,
+              animation: _animation,
+            );
+
+            // Wrap with Positioned.fill to make it a direct Stack child
+            return Positioned.fill(child: transitionedChild);
+          }),
+        );
+
+        final stack = () {
+          if (widget.isIndexedStack) {
+            return IndexedStack(index: _nextIndex, children: children);
+          } else {
+            return Stack(children: children);
+          }
+        }();
+
         return SizedBox(child: stack);
       },
     );
