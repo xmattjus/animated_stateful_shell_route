@@ -21,19 +21,27 @@ class AnimatedStatefulShellRoute extends StatefulShellRoute {
   AnimatedStatefulShellRoute({
     required super.branches,
     super.redirect,
-    required StatefulShellRouteBuilder super.builder,
+    super.builder,
     super.pageBuilder,
     super.notifyRootObserver,
     super.parentNavigatorKey,
     super.restorationScopeId,
-    GlobalKey<StatefulNavigationShellState>? navigatorKey,
+    super.key,
     this.transitionDuration = const Duration(milliseconds: 300),
     this.transitionCurve = Easing.standard,
     required this.transitionBuilder,
-  }) : super(
-         navigatorContainerBuilder: _buildAnimatedContainer,
-         key: navigatorKey,
-       );
+  }) : assert(branches.isNotEmpty),
+       assert(
+         (pageBuilder != null) || (builder != null),
+         'One of builder or pageBuilder must be provided',
+       ),
+       assert(
+         _debugUniqueNavigatorKeys(branches).length == branches.length,
+         'Navigator keys must be unique',
+       ),
+       assert(_debugValidateParentNavigatorKeys(branches)),
+       assert(_debugValidateRestorationScopeIds(restorationScopeId, branches)),
+       super(navigatorContainerBuilder: _buildAnimatedContainer);
 
   static Widget _buildAnimatedContainer(
     BuildContext context,
@@ -50,5 +58,45 @@ class AnimatedStatefulShellRoute extends StatefulShellRoute {
       transitionBuilder: route.transitionBuilder,
       children: children,
     );
+  }
+
+  static Set<GlobalKey<NavigatorState>> _debugUniqueNavigatorKeys(
+    List<StatefulShellBranch> branches,
+  ) => Set<GlobalKey<NavigatorState>>.from(
+    branches.map((StatefulShellBranch e) => e.navigatorKey),
+  );
+
+  static bool _debugValidateParentNavigatorKeys(
+    List<StatefulShellBranch> branches,
+  ) {
+    for (final branch in branches) {
+      for (final RouteBase route in branch.routes) {
+        if (route is GoRoute) {
+          assert(
+            route.parentNavigatorKey == null ||
+                route.parentNavigatorKey == branch.navigatorKey,
+          );
+        }
+      }
+    }
+    return true;
+  }
+
+  static bool _debugValidateRestorationScopeIds(
+    String? restorationScopeId,
+    List<StatefulShellBranch> branches,
+  ) {
+    if (branches
+        .map((StatefulShellBranch e) => e.restorationScopeId)
+        .nonNulls
+        .isNotEmpty) {
+      assert(
+        restorationScopeId != null,
+        'A restorationScopeId must be set for '
+        'the StatefulShellRoute when using restorationScopeIds on one or more '
+        'of the branches',
+      );
+    }
+    return true;
   }
 }
